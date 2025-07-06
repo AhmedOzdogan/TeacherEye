@@ -1,3 +1,24 @@
-#environment files
+# .gitignore
+
+# Virtual environment
+.venv/
+env/
+
+# Python junk
+__pycache__/
+*.pyc
+
+# Secret env file
 .env
-env
+
+# IDE/editor config
+.vscode/
+.idea/
+*.swp
+
+# SQLite (if used)
+db.sqlite3
+
+# Static/media artifacts (if generated)
+staticfiles/
+media/
