@@ -1,1 +1,1 @@
-# InsightED
+# TeacherEye
