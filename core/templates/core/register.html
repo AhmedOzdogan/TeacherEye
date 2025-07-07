@@ -1,82 +1,104 @@
-{%extends 'core/base.html' %}
+{% extends "core/base_login.html" %}
 
 {% block title %}Register - TeacherEye{% endblock %}
 
-{% block body %}
 
-<section class="py-3 py-md-5 py-xl-8">
-    <div class="container">
-        <div class="row">
+{% block body_header %}
+
+<div class="mb-5">
+    <h2 class="display-5 fw-bold text-center">Sign in</h2>
+    <p class="text-center m-0">Don't have an account? <a href="/register">Sign up</a></p>
+</div>
+{% endblock %}
+
+{% block body_content %}
+
+<div class="col-12 col-lg-5">
+    <form method="POST" action="/register/">
+        {% csrf_token %}
+        <div class="row gy-3 overflow-hidden">
             <div class="col-12">
-                <div class="mb-5">
-                    <h2 class="display-5 fw-bold text-center">Sign up</h2>
-                    <p class="text-center m-0">Already have an account? <a href="/login">Log in</a></p>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control border-0 border-bottom rounded-0" name="firstname"
+                        id="firstname" placeholder="First Name">
+                    <label for="firstname" class="form-label">First Name</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control border-0 border-bottom rounded-0" name="lastname"
+                        id="lastname" placeholder="Last Name">
+                    <label for="lastname" class="form-label">Last Name</label>
                 </div>
             </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-12 col-lg-10 col-xl-8">
-                <div class="row gy-5 justify-content-center">
-                    <div class="col-12 col-lg-5">
-                        <form action="#!">
-                            <div class="row gy-3 overflow-hidden">
-                                <div class="col-12">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control border-0 border-bottom rounded-0"
-                                            name="firstname" id="firstname" placeholder="First Name" required>
-                                        <label for="firstname" class="form-label">First Name</label>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control border-0 border-bottom rounded-0"
-                                            name="lastname" id="lastname" placeholder="Last Name" required>
-                                        <label for="lastname" class="form-label">Last Name</label>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-floating mb-3">
-                                        <input type="email" class="form-control border-0 border-bottom rounded-0"
-                                            name="email" id="email" placeholder="name@example.com" required>
-                                        <label for="email" class="form-label">Email</label>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-floating mb-3">
-                                        <input type="password" class="form-control border-0 border-bottom rounded-0"
-                                            name="password" id="password" value="" placeholder="Password" required>
-                                        <label for="password" class="form-label">Password</label>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-floating mb-3">
-                                        <input type="password" class="form-control border-0 border-bottom rounded-0"
-                                            name="password_again" id="password_again" value=""
-                                            placeholder="Password Again" required>
-                                        <label for="password_again" class="form-label">Password Again</label>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" name="terms" id="terms"
-                                            required>
-                                        <label class="form-check-label" for="terms">
-                                            I agree to the terms and conditions
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="d-grid">
-                                        <button class="btn btn-outline-dark rounded-0 fs-6" type="submit">Sign
-                                            up</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input type="email" class="form-control border-0 border-bottom rounded-0" name="email" id="email"
+                        placeholder="name@example.com" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required>
+                    <label for="email" class="form-label">Email</label>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control border-0 border-bottom rounded-0" name="password"
+                        id="password" value="" placeholder="Password" required>
+                    <label for="password" class="form-label">Password</label>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control border-0 border-bottom rounded-0" name="password_Confirm"
+                        id="password_Confirm" value="" placeholder="Password Confirm" required>
+                    <label for="password_Confirm" class="form-label">Password Confirm</label>
+                    <br>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="ShowPassword" checked>
+                        <label class="form-check-label" for="ShowPassword">Show Password</label>
                     </div>
-
                 </div>
             </div>
+            <div class="col-12">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="on" name="terms" id="terms" required>
+                    <label class="form-check-label" for="terms">
+                        I agree to the terms and conditions.
+                    </label>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="d-grid">
+                    <button class="btn btn-outline-dark rounded-0 fs-6" type="submit">Sign
+                        up</button>
+                </div>
+            </div>
+            <div class="container mt-2">
+                {% if message %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+                {% endif %}
+            </div>
         </div>
-    </div>
-</section>
+    </form>
+</div>
+{% endblock %}
 
+
+{% block scripts %}
+<script>
+    // Password Toggle
+    document.addEventListener("DOMContentLoaded", function () {
+        const checkbox = document.getElementById("ShowPassword");
+        const passwordInput = document.getElementById("password");
+
+        if (checkbox && passwordInput) {
+            // Ensure checkbox is checked initially
+            checkbox.checked = false;
+            // Set initial state based on checkbox
+            passwordInput.type = checkbox.checked ? "text" : "password";
+
+            checkbox.addEventListener("change", function () {
+                passwordInput.type = this.checked ? "text" : "password";
+            });
+        }
+    });
+</script>
 {% endblock %}
