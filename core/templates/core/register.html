@@ -1,0 +1,82 @@
+{%extends 'core/base.html' %}
+
+{% block title %}Register - TeacherEye{% endblock %}
+
+{% block body %}
+
+<section class="py-3 py-md-5 py-xl-8">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="mb-5">
+                    <h2 class="display-5 fw-bold text-center">Sign up</h2>
+                    <p class="text-center m-0">Already have an account? <a href="/login">Log in</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10 col-xl-8">
+                <div class="row gy-5 justify-content-center">
+                    <div class="col-12 col-lg-5">
+                        <form action="#!">
+                            <div class="row gy-3 overflow-hidden">
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control border-0 border-bottom rounded-0"
+                                            name="firstname" id="firstname" placeholder="First Name" required>
+                                        <label for="firstname" class="form-label">First Name</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control border-0 border-bottom rounded-0"
+                                            name="lastname" id="lastname" placeholder="Last Name" required>
+                                        <label for="lastname" class="form-label">Last Name</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <input type="email" class="form-control border-0 border-bottom rounded-0"
+                                            name="email" id="email" placeholder="name@example.com" required>
+                                        <label for="email" class="form-label">Email</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <input type="password" class="form-control border-0 border-bottom rounded-0"
+                                            name="password" id="password" value="" placeholder="Password" required>
+                                        <label for="password" class="form-label">Password</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <input type="password" class="form-control border-0 border-bottom rounded-0"
+                                            name="password_again" id="password_again" value=""
+                                            placeholder="Password Again" required>
+                                        <label for="password_again" class="form-label">Password Again</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" name="terms" id="terms"
+                                            required>
+                                        <label class="form-check-label" for="terms">
+                                            I agree to the terms and conditions
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="d-grid">
+                                        <button class="btn btn-outline-dark rounded-0 fs-6" type="submit">Sign
+                                            up</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
