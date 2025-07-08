@@ -6,8 +6,8 @@
 {% block body_header %}
 
 <div class="mb-5">
-    <h2 class="display-5 fw-bold text-center">Sign in</h2>
-    <p class="text-center m-0">Don't have an account? <a href="/register">Sign up</a></p>
+    <h2 class="display-5 fw-bold text-center">Sign up</h2>
+    <p class="text-center m-0">Already have an account? <a href="/login">Log in</a></p>
 </div>
 {% endblock %}
 
@@ -17,18 +17,6 @@
     <form method="POST" action="/register/">
         {% csrf_token %}
         <div class="row gy-3 overflow-hidden">
-            <div class="col-12">
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control border-0 border-bottom rounded-0" name="firstname"
-                        id="firstname" placeholder="First Name">
-                    <label for="firstname" class="form-label">First Name</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control border-0 border-bottom rounded-0" name="lastname"
-                        id="lastname" placeholder="Last Name">
-                    <label for="lastname" class="form-label">Last Name</label>
-                </div>
-            </div>
             <div class="col-12">
                 <div class="form-floating mb-3">
                     <input type="email" class="form-control border-0 border-bottom rounded-0" name="email" id="email"
@@ -88,15 +76,18 @@
     document.addEventListener("DOMContentLoaded", function () {
         const checkbox = document.getElementById("ShowPassword");
         const passwordInput = document.getElementById("password");
+        const passwordConfirmInput = document.getElementById("password_Confirm");
 
         if (checkbox && passwordInput) {
             // Ensure checkbox is checked initially
             checkbox.checked = false;
             // Set initial state based on checkbox
             passwordInput.type = checkbox.checked ? "text" : "password";
+            passwordConfirmInput.type = checkbox.checked ? "text" : "password";
 
             checkbox.addEventListener("change", function () {
                 passwordInput.type = this.checked ? "text" : "password";
+                passwordConfirmInput.type = this.checked ? "text" : "password";
             });
         }
     });

@@ -6,8 +6,8 @@
 {% block body_header %}
 
 <div class="mb-5">
-    <h2 class="display-5 fw-bold text-center">Sign up</h2>
-    <p class="text-center m-0">Already have an account? <a href="/login">Log in</a></p>
+    <h2 class="display-5 fw-bold text-center">Sign in</h2>
+    <p class="text-center m-0">Don't have an account? <a href="/register">Sign up</a></p>
 </div>
 {% endblock %}
 
@@ -49,7 +49,7 @@
                     </div>
                     <div class="col-6">
                         <div class="text-end">
-                            <a href="#!" class="link-secondary text-decoration-none">Forgot
+                            <a href="/reset_password" class="link-secondary text-decoration-none">Forgot
                                 password?</a>
                         </div>
                     </div>
@@ -59,6 +59,13 @@
                 <div class="d-grid">
                     <button class="btn btn-lg btn-dark rounded-0 fs-6" type="submit">Log in</button>
                 </div>
+            </div>
+            <div class="container mt-2">
+                {% if message %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+                {% endif %}
             </div>
         </div>
     </form>
