@@ -1,1 +1,122 @@
-teachers page
+{% extends "tracker/dashboard_base.html" %}
+{% load static %}
+
+{% block admin_body %}
+
+<div class="container-fluid px-2 py-0">
+    <h1 class="mt-4">Overview</h1>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            My Classes
+        </div>
+        <div class="card-body">
+            <div id="main-class-cards" class="row g-2">
+                <!-- Class cards will be injected here -->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-bar me-1"></i>
+                Bar Chart Example
+            </div>
+            <div class="card-body"><canvas id="myBarChart" width="100%" height="50"></canvas></div>
+            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-pie me-1"></i>
+                Pie Chart Example
+            </div>
+            <div class="card-body"><canvas id="myPieChart" width="100%" height="50"></canvas></div>
+            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block admin_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Promise.all([
+            fetch('/api/classes/').then(res => res.json()),
+            fetch('/api/students/').then(res => res.json())
+        ])
+            .then(([classes, students]) => {
+                const container = document.getElementById('main-class-cards');
+                container.innerHTML = ''; // Clear existing content
+
+                if (Array.isArray(classes) && classes.length > 0) {
+                    // Group students by classroom_id
+                    const studentCounts = {};
+                    students.forEach(s => {
+                        const classId = s.classroom_id;
+                        if (classId in studentCounts) {
+                            studentCounts[classId]++;
+                        } else {
+                            studentCounts[classId] = 1;
+                        }
+                    });
+
+                    classes.sort((a, b) => new Date(b.edited_at) - new Date(a.edited_at));
+                    const latestClasses = classes.slice(0, 6);
+                    console.log('Latest Classes:', latestClasses);
+
+                    // Render class cards
+                    latestClasses.forEach(cls => {
+                        const col = document.createElement('div');
+                        col.className = 'col-md-4';
+
+                        // Create a link wrapper
+                        const link = document.createElement('a');
+                        link.href = `/class/${cls.id}/`;
+                        link.style.textDecoration = 'none';
+                        link.className = 'text-white';
+
+                        const card = document.createElement('div');
+                        card.className = 'card h-100 bg-dark text-white shadow-sm border-light';
+
+                        const cardBody = document.createElement('div');
+                        cardBody.className = 'card-body';
+
+                        const title = document.createElement('h5');
+                        title.className = 'card-title';
+                        title.textContent = cls.name;
+
+                        const teacher = document.createElement('p');
+                        teacher.className = 'card-text mb-1';
+                        teacher.innerHTML = `<strong>Teacher:</strong> ${cls.teacher_username}`;
+
+                        const studentCount = studentCounts[cls.id] || 0;
+                        const studentInfo = document.createElement('p');
+                        studentInfo.className = 'card-text text-muted';
+                        studentInfo.innerHTML = `<strong>Students:</strong> ${studentCount}`;
+
+                        cardBody.appendChild(title);
+                        cardBody.appendChild(teacher);
+                        cardBody.appendChild(studentInfo);
+                        card.appendChild(cardBody);
+                        link.appendChild(card);
+                        col.appendChild(link);
+                        container.appendChild(col);
+                    });
+                } else {
+                    container.innerHTML = '<div class="col"><p>No classes found.</p></div>';
+                }
+            })
+            .catch(error => {
+                const container = document.getElementById('main-class-cards');
+                container.innerHTML = '<div class="col"><p class="text-danger">Error loading classes.</p></div>';
+                console.error('Fetch error:', error);
+            });
+    });
+</script>
+
+{% endblock %}

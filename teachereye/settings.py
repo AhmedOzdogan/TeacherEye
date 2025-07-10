@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'tracker',  # Your app name
+    'rest_framework', # Django REST Framework for API development
+    'tracker',  # App for managing teacher and student data
     'core',  # Core app for common functionalities
     
 ]
@@ -165,3 +166,4 @@ LOGGING = {
 }
 
 AUTH_USER_MODEL = 'core.User'
+

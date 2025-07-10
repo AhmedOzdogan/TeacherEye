@@ -1,0 +1,216 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Dashboard</title>
+    <link href="{% static 'tracker/css/styles.css' %}" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    {% block admin_head %} {% endblock %}
+    <style>
+        #sidebar-classes {
+            max-height: 300px;
+            overflow-y: auto;
+            scrollbar-width: medium;
+            scrollbar-color: #616466 #1d2124;
+            /* thumb color, track color */
+        }
+
+        /* WebKit (Chrome, Edge, Safari) */
+        #sidebar-classes::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #sidebar-classes::-webkit-scrollbar-track {
+            background: #1d2124;
+        }
+
+        #sidebar-classes::-webkit-scrollbar-thumb {
+            background-color: #343a40;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark py-10">
+        <!-- Navbar Brand-->
+        <div class="d-flex align-items-center px-3 py-3">
+            <span class="h4 mb-0 me-2 text-white">TeacherEye</span>
+            <img class="py-1" src="{% static 'core/images/favicon_nb.png' %}" alt="logo" style="max-height: 70px;" />
+        </div>
+        <!-- Navbar-->
+        <ul class="navbar-nav ms-auto me-0 me-md-3 my-2 my-md-0">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#!">Settings</a></li>
+                    <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+                    <li>
+                        <hr class="dropdown-divider" />
+                    </li>
+                    <li><a class="dropdown-item" href="#!">Logout</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Core</div>
+                        {% if user.role == 'teacher' %}
+                        <a class="nav-link" href="/dashboard_teachers/">Dashboard</a>
+                        {% elif user.role == 'manager' %}
+                        <a class="nav-link" href="/dashboard_managers/">Dashboard</a>
+                        {% else %}
+                        <a class="nav-link" href="/dashboard_admins/">Dashboard</a>
+                        {% endif %}
+                        </a>
+
+                        </a>
+                        <div class="sb-sidenav-menu-heading">Classes and Students</div>
+
+                        <a class="nav-link" href="/your-create-class-url/">
+                            <div class="sb-nav-link-icon"><i class="fas fa-plus-circle"></i></div>
+                            New Class
+                        </a>
+                        <!-- Collapsible Classes Menu -->
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                            data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                            Classes
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+
+                        <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne"
+                            data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav" id="sidebar-classes"
+                                style="max-height: 200px; overflow-y: auto;">
+                                <!-- Class links will be inserted here -->
+                            </nav>
+                        </div>
+
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages"
+                            aria-expanded="false" aria-controls="collapsePages">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                            Students
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapsePages" aria-labelledby="headingTwo"
+                            data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                <div id="class-student-stats" class="px-3 text-white small">
+                                    <!-- Stats will be inserted here -->
+                                    Loading stats...
+                                </div>
+                            </nav>
+                        </div>
+                        <div class="sb-sidenav-menu-heading">Addons</div>
+                        <a class="nav-link" href="charts.html">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                            Charts
+                        </a>
+                        <a class="nav-link" href="tables.html">
+                            <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                            Tables
+                        </a>
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer py-4">
+                    <div class="small">Logged in as: {{ user.username }}</div>
+                </div>
+            </nav>
+        </div>
+        <div id="layoutSidenav_content">
+            <main class="px-4 py-2">
+                {% block admin_body %} {% endblock %}
+            </main>
+            <footer class="bg-light mt-auto py-2">
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center justify-content-center small">
+                        <div class="text-center w-100">
+                            <div class="text-muted mb-1">Copyright &copy; TeacherEye 2025</div>
+                            <div>
+                                <a class="text-muted" href="#">Privacy Policy</a>
+                                &middot;
+                                <a class="text-muted" href="#">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+            crossorigin="anonymous"></script>
+        <script src="js/scripts.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+            crossorigin="anonymous"></script>
+        <script src="assets/demo/chart-area-demo.js"></script>
+        <script src="assets/demo/chart-bar-demo.js"></script>
+        <script src="assets/demo/chart-pie-demo.js"></script>
+</body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('/api/classes/')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('sidebar-classes');
+
+                if (data && data.length > 0) {
+                    data.forEach(cls => {
+                        const link = document.createElement('a');
+                        link.className = 'nav-link';
+                        link.href = `/class/${cls.id}/`;  // Change to your desired URL pattern
+                        link.textContent = cls.name
+
+                        container.appendChild(link);
+                    });
+                } else {
+                    container.innerHTML = '<span class="text-muted px-3">No classes found.</span>';
+                }
+            })
+            .catch(error => {
+                const container = document.getElementById('teacher-classes');
+                container.innerHTML = '<span class="text-danger px-3">Error loading classes.</span>';
+                console.error('Fetch error:', error);
+            });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const statsContainer = document.getElementById('class-student-stats');
+
+        Promise.all([
+            fetch('/api/classes/').then(res => res.json()),
+            fetch('/api/students/').then(res => res.json())
+        ])
+            .then(([classes, students]) => {
+                const totalClasses = Array.isArray(classes) ? classes.length : 0;
+                const totalStudents = Array.isArray(students) ? students.length : 0;
+
+                statsContainer.innerHTML = `
+            <div><strong>Total Classes:</strong> ${totalClasses}</div>
+            <div><strong>Total Students:</strong> ${totalStudents}</div>
+        `;
+            })
+            .catch(error => {
+                statsContainer.textContent = 'Error loading stats.';
+                console.error('Stats fetch error:', error);
+            });
+    });
+
+
+</script>
+{% block admin_scripts %} {% endblock %}
+
+</html>
