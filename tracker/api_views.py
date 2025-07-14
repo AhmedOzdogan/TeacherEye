@@ -6,7 +6,11 @@ from tracker.models import Classrooms, Students, TreeViewSettings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .serializers import TreeViewSettingsSerializer
+from .serializers import StudentSerializer, TreeViewSettingsSerializer, ClassroomSerializer
+from rest_framework.parsers import JSONParser
+from rest_framework import status
+from rest_framework import viewsets
+
 
 User = get_user_model()
 
@@ -28,44 +32,59 @@ def api_users(request):
     ]
     return JsonResponse(data, safe=False)
 
-@user_passes_test(lambda u: u.is_authenticated)
+@api_view(['GET', 'POST'])
+@user_passes_test(lambda u: u.is_authenticated) # type: ignore
 def api_classes(request):
-    classrooms = Classrooms.objects.filter(teacher=request.user).order_by('edited_at')[:6]
-    data = [
-        {
-            'id': c.id,
-            'name': c.name,
-            'teacher_id': c.teacher.id if c.teacher else None, # type: ignore
-            'teacher_username': c.teacher.username if c.teacher else None,
-            'teacher_email': c.teacher.email if c.teacher else None,
-            'edited_at': c.edited_at.isoformat(),
-        }
-        for c in classrooms
-    ]
-    return JsonResponse(data, safe=False)
+    if request.method == "GET":
+        classrooms = Classrooms.objects.filter(teacher=request.user).order_by('edited_at')[:6]
+        serializer = ClassroomSerializer(classrooms, many=True)
+        return Response(serializer.data)
 
-@user_passes_test(lambda u: u.is_authenticated)
+    elif request.method == "POST":
+        # Handle CREATE (no ID expected)
+        serializer = ClassroomSerializer(data=request.data)
+        print("Received POST data for classroom:", request.data)
+        if serializer.is_valid():
+            classroom = serializer.save(teacher=request.user)
+            return Response({'id': classroom.id, 'name': classroom.name}, status=status.HTTP_201_CREATED)  # type: ignore
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+@api_view(['GET', 'POST'])
+@user_passes_test(lambda u: u.is_authenticated)  # type: ignore
 def api_students(request):
-    students = Students.objects.filter(classroom__teacher=request.user).order_by('id')
-    data = [
-        {
-            'id': s.id,
-            'name': s.name,
-            'email': s.email,
-            'teacher': s.classroom.teacher.username if s.classroom and s.classroom.teacher else None,
-            'classroom_id': s.classroom.id if s.classroom else None,
-            'classroom_name': s.classroom.name if s.classroom else None,
-            'stars_count': s.stars_count,
-        }
-        for s in students
-    ]
-    return JsonResponse(data, safe=False)
+    if request.method == 'GET':
+        students = Students.objects.filter(classroom__teacher=request.user).order_by('id')
+        serializer = StudentSerializer(students, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        data = request.data
+        logging.info(f"Received data for students: {data}")
+
+        # Check if this is a bulk post
+        is_bulk = isinstance(data, list)
+
+        serializer = StudentSerializer(data=data, many=is_bulk)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {'status': 'success', 'data': serializer.data},
+                status=status.HTTP_201_CREATED
+            )
+
+        print("Student serializer errors:", serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def treeview_settings_api(request):
     settings, _ = TreeViewSettings.objects.get_or_create(user=request.user)
-
+    
     if request.method == 'GET':
         serializer = TreeViewSettingsSerializer(settings)
         return Response(serializer.data)
@@ -99,3 +118,11 @@ def remove_star_count(request):
         student.save()
         return Response({'status': 'success', 'stars_count': student.stars_count})
     return Response({'status': 'error', 'message': 'Student not found'}, status=404)
+
+class StudentViewSet(viewsets.ModelViewSet):
+    queryset = Students.objects.all()
+    serializer_class = StudentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Students.objects.filter(classroom__teacher=self.request.user)

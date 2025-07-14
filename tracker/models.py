@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.text import slugify
+from django.db.models import JSONField
 
 User = get_user_model()
 
@@ -17,6 +18,8 @@ class Classrooms(models.Model):
         User, on_delete=models.CASCADE, related_name='classrooms'
     )
     edited_at = models.DateTimeField(auto_now=True)
+    
+    notes_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -31,6 +34,16 @@ class Students(models.Model):
     email = models.EmailField(unique=True, null=True)
     classroom = models.ForeignKey(Classrooms, on_delete=models.CASCADE, related_name='students')
     stars_count = models.PositiveIntegerField(default=0)
+    notes = models.JSONField(default=list, blank=True)
+    note_overall = models.IntegerField(blank=True, null=True)
+    
+    def save(self, *args, **kwargs):
+        if isinstance(self.notes, list):
+            valid_notes = [n for n in self.notes if isinstance(n, (int, float))]
+            self.note_overall = sum(valid_notes) // len(valid_notes) if valid_notes else None
+        else:
+            self.note_overall = None
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name} {self.surname}"

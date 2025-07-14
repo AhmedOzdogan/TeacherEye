@@ -27,4 +27,14 @@ def dashboard_admins(request):
 def classroom_detail_view(request, class_id):
     classroom = get_object_or_404(Classrooms, id=class_id)
     settings, _ = TreeViewSettings.objects.get_or_create(user=request.user)
-    return render(request, 'tracker/classroom_detail.html', {'classroom': classroom , 'settings': settings})
+    note_range = list(range(0, 6))
+    return render(request, 'tracker/classroom_detail.html', {'classroom': classroom , 'settings': settings, 'note_range': note_range})
+
+def add_new_class(request):
+    """
+    Render the form to add a new class.
+    """
+    if request.method == 'POST':
+        # Handle form submission logic here
+        pass
+    return render(request, 'tracker/add_new_class.html', {'current_user': request.user})

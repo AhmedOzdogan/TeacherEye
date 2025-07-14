@@ -1,0 +1,206 @@
+{% extends "tracker/dashboard_base.html" %}
+{% load static %}
+
+{% block title %} <title>Add a New Class</title> {% endblock %}
+
+{% block navbar %} 
+
+<div class="sb-sidenav-menu-heading">Display Options</div>
+<div class="form-check text-white px-3">
+    <label for="show_notes" class="form-check-label mb-4">Number Of Students</label>
+    <input type="Number" class="form-control form-control-sm mb-4" id="student_count" name="student_count" placeholder="Number of Students">
+    <button id="generate-student-rows-btn" class="btn btn-sm btn-success" type="button">
+        <i class="fa-solid fa-user-plus"></i> Add Students
+    </button>
+</div>
+<br>
+
+
+{% endblock %}
+
+{% block admin_body %}
+<br>
+<br>
+<div class="card mb-4 ">
+    <div class="card-header">
+        <i class="fas fa-table me-1"></i>
+        Add a New Class
+    </div>
+    <div class="card-body"></div>
+    <form method="POST" action="">
+        {% csrf_token %}
+        <div class="mb-3 px-3">
+            <label for="class_name" class="form-label">Class Name</label>
+            <div class="d-flex align-items-start gap-2">
+                <input type="text" style="width: 300px;" class="form-control" id="class_name" name="class_name" placeholder="Enter Class Name" required>
+                <button class="btn btn-outline-primary mb-3" type="button" id="add-student-btn">
+                    <i class="fa-solid fa-user-plus"></i> Save Students
+                </button>
+            </div>
+        </div>
+
+
+        <table id = "treeview-table" class="table table-bordered " style="table-layout: fixed;">
+            <thead class="thead-dark px-3">
+                <tr id="header-row">
+                    <th>Name</th>
+                    <th>Surname</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- rows go here -->
+                 
+            </tbody>
+        </table>
+
+    </form>
+</div>
+
+
+
+{% endblock %}
+
+
+{% block admin_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const generateBtn = document.getElementById('generate-student-rows-btn');
+        const addStudentBtn = document.getElementById('add-student-btn');
+        const studentCountInput = document.getElementById('student_count');
+        const tbody = document.querySelector('#treeview-table tbody');
+
+        function addStudents() {
+            const studentCount = parseInt(studentCountInput.value, 10) || 1;
+            if (isNaN(studentCount) || studentCount <= 0) {
+                alert('Please enter a valid number of students.');
+                return;
+            }
+
+            tbody.innerHTML = '';
+            for (let i = 1; i <= studentCount; i++) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="text" class="form-control" name="student_name_${i}" placeholder="Name" required></td>
+                    <td><input type="text" class="form-control" name="student_surname_${i}" placeholder="Surname" required></td>
+                    <td><input type="email" class="form-control" name="student_email_${i}" placeholder="Email" required></td>
+                `;
+                tbody.appendChild(row);
+            }
+        }
+
+        if (!studentCountInput.value) {
+            studentCountInput.value = 1;
+        }
+
+        addStudents(); // Initial render
+
+        generateBtn.addEventListener('click', addStudents);
+
+        addStudentBtn.addEventListener('click', function () {
+            const className = document.getElementById('class_name').value.trim();
+            if (!className) {
+                alert('Please enter a class name.');
+                return;
+            }
+
+            const students = [];
+            const rows = document.querySelectorAll('#treeview-table tbody tr');
+            rows.forEach(row => {
+                const name = row.querySelector('input[name^="student_name_"]').value.trim();
+                const surname = row.querySelector('input[name^="student_surname_"]').value.trim();
+                const email = row.querySelector('input[name^="student_email_"]').value.trim();
+                if (name && surname ) {
+                    students.push({
+                        name, 
+                        surname, 
+                        email: email || null
+                    });
+                }
+            });
+
+            if (students.length === 0) {
+                alert('Please add at least one student.');
+                return;
+            }
+
+            // Step 1: Create the class
+            fetch('/api/classes/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')  // safer than hardcoded '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ name: className })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Response from /api/classes/:', data);
+                if (!data.id) {
+                    alert('Failed to create class.');
+                    return;
+                }
+
+                const classId = data.id;
+
+                // Step 2: Create students with class reference
+                const studentPayload = students.map(s => ({
+                    ...s,
+                    classroom: classId
+                }));
+                console.log('Student payload:', studentPayload);
+
+                return fetch('/api/students/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify(studentPayload)
+                });
+            })
+            .then(response => {
+                if (response && response.ok) {
+                    alert('Class and students saved successfully!');
+                    location.reload();
+                } else if (response) {
+                    return response.json().then(err => {
+                        console.error(err);
+                        alert('Error saving students.');
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Unexpected error:', error);
+                alert('An unexpected error occurred.');
+            });
+        });
+
+        // Add this helper
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (const cookie of cookies) {
+                    const trimmed = cookie.trim();
+                    if (trimmed.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(trimmed.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+
+            console.log('Class Name:', className);
+            console.log('Students:', students);
+
+            // TODO: Submit via AJAX or actual form submission
+        });
+
+</script>
+
+
+
+{% endblock %}
