@@ -1,4 +1,6 @@
+
 document.addEventListener('DOMContentLoaded', function () {
+    console.log("Classroom JS loaded");
     const classroomId = window.CLASSROOM_ID;
     const csrfToken = window.CSRF_TOKEN;
     const tableBody = document.querySelector('#treeview-table tbody');
@@ -351,4 +353,28 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(err => console.error(`Error updating ${field}:`, err));
         });
     });
+
+    
+    const addButton = document.getElementById("add-student-btn");
+    if (addButton) {
+        addButton.addEventListener("click", function () {
+            console.log("Add Student button clicked");
+
+            const newRow = document.createElement("tr");
+            newRow.innerHTML = `
+                <td contenteditable="true">First name</td>
+                <td contenteditable="true">Last name</td>
+                <td class="col-stars">0</td>
+                <td class="col-button">
+                    <button class="btn btn-sm btn-primary save-btn">Save</button>
+                </td>
+            `;
+
+            tableBody.appendChild(newRow);
+        });
+    }
+    else {
+        console.error("Add Student button not found");
+    }
+    
 });
